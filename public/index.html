@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Xiaoshi&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Xiaoshi&#39;s Blog">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Xiaoshi&#39;s Blog">
+<meta property="article:author" content="Xiaoshi Wang">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Xiaoshi&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Xiaoshi&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Spring-Data-JPA-小记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/" class="article-date">
+  <time datetime="2020-01-17T21:32:16.000Z" itemprop="datePublished">2020-01-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/">Spring Data JPA 小记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Spring Data JPA 是 Spring 基于 Hibernate 开发的一个 JPA 框架。能够帮助我们简单快速实现数据持久层的操作。下面简单介绍一下 spring-data-jpa 的使用。</p>
+<h2 id="导入依赖"><a href="#导入依赖" class="headerlink" title="导入依赖"></a>导入依赖</h2><p>很简单，在 <code>pom.xml</code> 中添加如下依赖:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.springframework.boot&lt;&#x2F;groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;&#x2F;artifactId&gt;</span><br><span class="line">&lt;&#x2F;dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置工程文件"><a href="#配置工程文件" class="headerlink" title="配置工程文件"></a>配置工程文件</h2><p>在 src/main/resources 中找到 <code>application.properties</code>, 添加下面这些，这里就给出一个项目的配置作为参考，具体还需要自己更改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">spring.jpa.properties.hibernate.dialect &#x3D; org.hibernate.dialect.PostgreSQLDialect &#x2F;&#x2F;这里具体换成你在用的数据库，我这里是 PostgreSQL</span><br><span class="line">spring.datasource.url&#x3D;jdbc:postgresql:&#x2F;&#x2F;localhost:数据库端口&#x2F;数据库名  &#x2F;&#x2F;填写数据库在哪个端口，名字</span><br><span class="line">spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation&#x3D;true</span><br><span class="line">spring.datasource.username&#x3D;你的数据库用户名</span><br><span class="line">spring.datasource.password&#x3D;你的数据库密码</span><br><span class="line">spring.datasource.initialization-mode&#x3D;always</span><br><span class="line">spring.jpa.hibernate.ddl-auto &#x3D; create</span><br><span class="line"></span><br><span class="line">spring.jpa.show-sql&#x3D;false</span><br><span class="line"></span><br><span class="line">spring.jpa.properties.hibernate.format-sql&#x3D;true</span><br><span class="line"></span><br><span class="line">spring.jpa.properties.hibernate.jdbc.batch_size &#x3D; 20</span><br><span class="line">spring.jpa.properties.hibernate.generate_statistics&#x3D;true</span><br><span class="line">spring.jpa.properties.hibernate.order_inserts &#x3D; true</span><br><span class="line">spring.jpa.properties.hibernate.order_updates &#x3D; true</span><br><span class="line">spring.jpa.properties.hibernate.jdbc.batch_versioned_data &#x3D; true</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/wangxiaoshi/image-host-xiaoshi/master/blog_files/img/picard-data-meme.png" alt=""></p>
+<h2 id="对-Entity-进行配置"><a href="#对-Entity-进行配置" class="headerlink" title="对 Entity 进行配置"></a>对 Entity 进行配置</h2><p>我们用一个学校学生统计做例子，将学生作为我们的一个 Entity，下面请看我放在 common/model 里面的 <code>Student.java</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">@Entity</span><br><span class="line">public class Student implements Serializable&#123;</span><br><span class="line"></span><br><span class="line">	private static final long serialVersionUID &#x3D; blabla;</span><br><span class="line"></span><br><span class="line">	@Id &#x2F;&#x2F;告诉 jpa 这是我们的主键</span><br><span class="line">    @GeneratedValue(strategy &#x3D; GenerationType.SEQUENCE)</span><br><span class="line">	@Column(nullable&#x3D;false)</span><br><span class="line">	private Long id;</span><br><span class="line"></span><br><span class="line">	private String student;</span><br><span class="line"></span><br><span class="line">	private Integer quantity;</span><br><span class="line">	private String blind;</span><br><span class="line">	private String specialty;</span><br><span class="line">	private String days;</span><br><span class="line">	private String ageRange;</span><br><span class="line">	private String gender;</span><br><span class="line">	private String hobbyGroup;</span><br><span class="line">	private Integer hobbyGroupAsNumber;</span><br><span class="line">	private String district;</span><br><span class="line">	private Integer year;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	public Student(Map&lt;String, String&gt; values) &#123;</span><br><span class="line">		super();</span><br><span class="line">		this.student &#x3D; values.getOrDefault(&quot;student&quot;, &quot;&quot;);</span><br><span class="line">		this.quantity &#x3D; Integer.parseInt(values.getOrDefault(&quot;quantity&quot;, &quot;1&quot;));</span><br><span class="line">		this.blind &#x3D; values.getOrDefault(&quot;blind&quot;, &quot;&quot;);</span><br><span class="line">		this.specialty &#x3D; values.getOrDefault(&quot;specialty&quot;,&quot;&quot;);</span><br><span class="line">		this.days &#x3D; values.getOrDefault(&quot;days&quot;, &quot;&quot;);</span><br><span class="line">		this.ageRange&#x3D; values.getOrDefault(&quot;ageRange&quot;, &quot;&quot;);</span><br><span class="line">		this.gender &#x3D; values.getOrDefault(&quot;gender&quot;, &quot;&quot;);</span><br><span class="line">		this.hobbyGroup &#x3D; values.getOrDefault(&quot;hobbyGroup&quot;, &quot;&quot;);</span><br><span class="line">		this.hobbyGroupAsNumber &#x3D; Integer.parseInt(values.getOrDefault(&quot;hobbyGroupAsNumber&quot;, &quot;&quot;));</span><br><span class="line">		this.district &#x3D; values.getOrDefault(&quot;landesKreis&quot;, &quot;&quot;);</span><br><span class="line">		this.year &#x3D; Integer.parseInt(values.getOrDefault(&quot;year&quot;, &quot;&quot;));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public Student() &#123;</span><br><span class="line">		super();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;.....省略一堆getters&#x2F;setters</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="在-Repository-里创建接口"><a href="#在-Repository-里创建接口" class="headerlink" title="在 Repository 里创建接口"></a>在 Repository 里创建接口</h2><p>使用JPA写接口可以说是非常的简单明了了，全部通过每一个方法的名字实现，具体的语法可以参考<a href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods" target="_blank" rel="noopener">这篇文章</a>的5.3.2 有一个 table3，我们就能看到大量的示例。还有这个<a href="https://github.com/spring-projects/spring-data-jpa/blob/master/src/test/java/org/springframework/data/jpa/repository/sample/UserRepository.java" target="_blank" rel="noopener">spring示例项目</a>可以参考。所以我们的 <code>StudentRepository</code> 大概就是这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Repository</span><br><span class="line">public interface StudentRepository extends PagingAndSortingRepository&lt;Student, Long&gt;, JpaSpecificationExecutor&lt;Student&gt; &#123;</span><br><span class="line">	</span><br><span class="line">    &#x2F;&#x2F; 找出所有 district 与 参数district 相同的 Student</span><br><span class="line">	public List&lt;Student&gt; findByDistrict(String district);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 找出所有 gender 与 参数gender 相同的 Student</span><br><span class="line">	public List&lt;Student&gt; findByGender(String gender);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实现动态的数据库-Query"><a href="#实现动态的数据库-Query" class="headerlink" title="实现动态的数据库 Query"></a>实现动态的数据库 Query</h2><p>我们现在知道了如何使用 jpa 来创建接口访问数据库，但是也就产生了一个问题：可以看到我们的查询条件是写死的，设想我们的需求类似淘宝搜索商品时添加的各种筛选条件，那我们就要为各种各样的组合查询写对应的接口。这显然是不现实而且很不优雅的，所以我们需要用到 JPA Criteria 来实现这种动态的查询。在这就先留一个坑吧，之后应该会再写一篇与之相关的。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/" data-id="ck5iqzuzd0000oetldvt8e4sp" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-在使用Spring-Security时需要注意的一个小细节" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/" class="article-date">
+  <time datetime="2020-01-16T09:51:40.000Z" itemprop="datePublished">2020-01-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/">在使用Spring Security时踩到的一个小坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="JwtAuthenticationFilter"><a href="#JwtAuthenticationFilter" class="headerlink" title="JwtAuthenticationFilter"></a>JwtAuthenticationFilter</h2><p>关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照<a href="https://www.devglan.com/spring-security/spring-boot-jwt-auth" target="_blank" rel="noopener">这篇文章</a>设置了以下几个类: </p>
+<ul>
+<li><code>JwtAuthenticationFilter.java</code> </li>
+<li><code>JwtTokenUtil.java</code></li>
+<li><code>WebSecurityConfig.java</code></li>
+<li><code>AuthenticationController.java</code></li>
+</ul>
+<p>并且在<code>WebSecurityConfig</code>中做了如下configure：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">   @Override</span><br><span class="line">protected void configure(HttpSecurity http) throws Exception &#123;</span><br><span class="line">	  http</span><br><span class="line">         .csrf().disable()</span><br><span class="line">         .headers().disable()</span><br><span class="line">         .cors().and()</span><br><span class="line">         .authorizeRequests()</span><br><span class="line">             .antMatchers(HttpMethod.POST, &quot;&#x2F;token&#x2F;generate-token&quot;).permitAll()</span><br><span class="line">             .antMatchers(HttpMethod.POST, &quot;&#x2F;users&#x2F;signup&quot;).permitAll()</span><br><span class="line">             .antMatchers(HttpMethod.GET, &quot;&#x2F;entries&quot;).hasAuthority(&quot;USER&quot;)</span><br><span class="line">             .anyRequest().denyAll()</span><br><span class="line">             .and()</span><br><span class="line">         .sessionManagement()</span><br><span class="line">             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br><span class="line">             .and()</span><br><span class="line">         .exceptionHandling()</span><br><span class="line">         .authenticationEntryPoint(unauthorizedHandler);</span><br><span class="line">	http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试时发现，用户在登陆后正常获取到 token，但是调用接口 /entries 时本应验证已经赋予每个用户的权限<code>USER</code>，却总是返回 HTTP 401，也就意味着用户并没有这个权限。于是便开始了漫长的寻找，最开始我坚定的认为前段获取的 token 里肯定是带着我们需要的 Authority USER 的，一上午无果。于是我才想到有可能是这个 authority 根本就没有被赋予用户，回到 <code>JwtAuthenticationFilter</code> 里面仔细查看，终于找到了问题所在：</p>
+<h2 id="UsernamePasswordAuthenticationToken-的构造器"><a href="#UsernamePasswordAuthenticationToken-的构造器" class="headerlink" title="UsernamePasswordAuthenticationToken 的构造器"></a>UsernamePasswordAuthenticationToken 的构造器</h2><p>原来，我们的 <code>UsernamePasswordAuthenticationToken</code> 有多种构造器。在上面的那篇文章中，是这样用的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UsernamePasswordAuthenticationToken authentication &#x3D; new UsernamePasswordAuthenticationToken(userDetails, null, Arrays.asList(new SimpleGrantedAuthority(&quot;USER&quot;)));</span><br></pre></td></tr></table></figure>
+<p>可以看到这里有三个参数。查找<a href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/authentication/UsernamePasswordAuthenticationToken.html" target="_blank" rel="noopener">Spring的源码</a>得知，调用了第二种Constructor</p>
+<blockquote>
+<p><code>UsernamePasswordAuthenticationToken(Object principal, Object credentials)</code><br> This constructor can be safely used by any code that wishes to create a UsernamePasswordAuthenticationToken, as the AbstractAuthenticationToken.isAuthenticated() will return false.</p>
+</blockquote>
+<blockquote>
+<p><code>UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection&lt;? extends GrantedAuthority&gt; authorities)</code><br><br>This constructor should only be used by AuthenticationManager or AuthenticationProvider implementations that are satisfied with producing a trusted</p>
+</blockquote>
+<p>第一个参数就是我们的 UserDetails, 第二个 credentials 代表了用来证明 Principle 的凭证（比如Password），第三个就是困扰我们的 authorities。而在我们的 <code>JwtAuthenticationFilter.java</code> 中，同事少些了一个参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UsernamePasswordAuthenticationToken authentication &#x3D; new UsernamePasswordAuthenticationToken(</span><br><span class="line">						userDetails, Arrays.asList(new SimpleGrantedAuthority(&quot;USER&quot;)));</span><br></pre></td></tr></table></figure>
+
+<p>这也就因为多态导致调用了第一种构造器，并错误得将 authority 放进了 每个 token 的 credentials 里面。糟糕的是这并不会报出任何错误，导致我们会很难发现问题所在。解决方法就是在两个参数间加一个 null 参数。</p>
+<h2 id="查看当前-Token-所拥有的权限"><a href="#查看当前-Token-所拥有的权限" class="headerlink" title="查看当前 Token 所拥有的权限"></a>查看当前 Token 所拥有的权限</h2><p>可以使用下面这句查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ck5gloytv000052tlcd2u8h0w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-星星点灯" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/" class="article-date">
+  <time datetime="2020-01-15T22:36:06.000Z" itemprop="datePublished">2020-01-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%94%9F%E6%B4%BB%E9%9A%8F%E6%83%B3/">生活随想</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/">星星点灯</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>第一次开始写博客。在工作中发现有很多问题和想法，需要找一个地方记录下来解决思路，方便自己以后查看，也希望能帮到其他碰到同样问题的朋友们。也会试着时不时写一些其他东西，并不是一个热衷分享的人，微信朋友圈也没有开，就在这里偷偷放着吧。</p>
+<p>2020年对我来说应该是很重要的一年了，本科即将毕业，刚刚开始工作，写下这些字时还有两周就又要开始 Klausurphase 的折磨。充满了变化和挑战。我相信自己可以适应并能够快速成长，进入人生的下一个阶段。</p>
+<h2 id="写博客用的语言"><a href="#写博客用的语言" class="headerlink" title="写博客用的语言"></a>写博客用的语言</h2><p>实不相瞒，关于写博客用什么语言我是很纠结了一下。用中文当然舒服，可是这就意味着我并不能指望写博客为我在德国的求职有任何增益。用德文当然更适合我现在的环境，只是恐怕我写不了几篇就会放弃。最后还是决定用中文怎么舒服怎么写，毕竟坚持写下去才是最重要的。</p>
+<hr>
+<p>废话就先写这么多吧，加油！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/" data-id="ck5fw55gx0000m6tl7iyu9aa6" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%BA%E7%94%9F/" rel="tag">人生</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/15/hello-world/" class="article-date">
+  <time datetime="2020-01-15T22:07:40.769Z" itemprop="datePublished">2020-01-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/01/15/hello-world/">Hello World</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/01/15/hello-world/" data-id="ck5fvmu900000fntl94814mtq" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB%E9%9A%8F%E6%83%B3/">生活随想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E7%94%9F/" rel="tag">人生</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/%E4%BA%BA%E7%94%9F/" style="font-size: 10px;">人生</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/">Spring Data JPA 小记</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/">在使用Spring Security时踩到的一个小坑</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/">星星点灯</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/15/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Xiaoshi Wang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>在使用Spring Security时踩到的一个小坑 | Xiaoshi&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="JwtAuthenticationFilter关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照这篇文章设置了以下几个类:   JwtAuthenticationFilter.java  JwtTokenUtil.java WebSecurityConfig.java AuthenticationControl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在使用Spring Security时踩到的一个小坑">
+<meta property="og:url" content="http://yoursite.com/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/index.html">
+<meta property="og:site_name" content="Xiaoshi&#39;s Blog">
+<meta property="og:description" content="JwtAuthenticationFilter关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照这篇文章设置了以下几个类:   JwtAuthenticationFilter.java  JwtTokenUtil.java WebSecurityConfig.java AuthenticationControl">
+<meta property="article:published_time" content="2020-01-16T09:51:40.000Z">
+<meta property="article:modified_time" content="2020-01-16T10:39:36.145Z">
+<meta property="article:author" content="Xiaoshi Wang">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Xiaoshi&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Xiaoshi&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-在使用Spring-Security时需要注意的一个小细节" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/" class="article-date">
+  <time datetime="2020-01-16T09:51:40.000Z" itemprop="datePublished">2020-01-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      在使用Spring Security时踩到的一个小坑
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="JwtAuthenticationFilter"><a href="#JwtAuthenticationFilter" class="headerlink" title="JwtAuthenticationFilter"></a>JwtAuthenticationFilter</h2><p>关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照<a href="https://www.devglan.com/spring-security/spring-boot-jwt-auth" target="_blank" rel="noopener">这篇文章</a>设置了以下几个类: </p>
+<ul>
+<li><code>JwtAuthenticationFilter.java</code> </li>
+<li><code>JwtTokenUtil.java</code></li>
+<li><code>WebSecurityConfig.java</code></li>
+<li><code>AuthenticationController.java</code></li>
+</ul>
+<p>并且在<code>WebSecurityConfig</code>中做了如下configure：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">   @Override</span><br><span class="line">protected void configure(HttpSecurity http) throws Exception &#123;</span><br><span class="line">	  http</span><br><span class="line">         .csrf().disable()</span><br><span class="line">         .headers().disable()</span><br><span class="line">         .cors().and()</span><br><span class="line">         .authorizeRequests()</span><br><span class="line">             .antMatchers(HttpMethod.POST, &quot;&#x2F;token&#x2F;generate-token&quot;).permitAll()</span><br><span class="line">             .antMatchers(HttpMethod.POST, &quot;&#x2F;users&#x2F;signup&quot;).permitAll()</span><br><span class="line">             .antMatchers(HttpMethod.GET, &quot;&#x2F;entries&quot;).hasAuthority(&quot;USER&quot;)</span><br><span class="line">             .anyRequest().denyAll()</span><br><span class="line">             .and()</span><br><span class="line">         .sessionManagement()</span><br><span class="line">             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)</span><br><span class="line">             .and()</span><br><span class="line">         .exceptionHandling()</span><br><span class="line">         .authenticationEntryPoint(unauthorizedHandler);</span><br><span class="line">	http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试时发现，用户在登陆后正常获取到 token，但是调用接口 /entries 时本应验证已经赋予每个用户的权限<code>USER</code>，却总是返回 HTTP 401，也就意味着用户并没有这个权限。于是便开始了漫长的寻找，最开始我坚定的认为前段获取的 token 里肯定是带着我们需要的 Authority USER 的，一上午无果。于是我才想到有可能是这个 authority 根本就没有被赋予用户，回到 <code>JwtAuthenticationFilter</code> 里面仔细查看，终于找到了问题所在：</p>
+<h2 id="UsernamePasswordAuthenticationToken-的构造器"><a href="#UsernamePasswordAuthenticationToken-的构造器" class="headerlink" title="UsernamePasswordAuthenticationToken 的构造器"></a>UsernamePasswordAuthenticationToken 的构造器</h2><p>原来，我们的 <code>UsernamePasswordAuthenticationToken</code> 有多种构造器。在上面的那篇文章中，是这样用的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UsernamePasswordAuthenticationToken authentication &#x3D; new UsernamePasswordAuthenticationToken(userDetails, null, Arrays.asList(new SimpleGrantedAuthority(&quot;USER&quot;)));</span><br></pre></td></tr></table></figure>
+<p>可以看到这里有三个参数。查找<a href="https://docs.spring.io/spring-security/site/docs/4.2.13.RELEASE/apidocs/org/springframework/security/authentication/UsernamePasswordAuthenticationToken.html" target="_blank" rel="noopener">Spring的源码</a>得知，调用了第二种Constructor</p>
+<blockquote>
+<p><code>UsernamePasswordAuthenticationToken(Object principal, Object credentials)</code><br> This constructor can be safely used by any code that wishes to create a UsernamePasswordAuthenticationToken, as the AbstractAuthenticationToken.isAuthenticated() will return false.</p>
+</blockquote>
+<blockquote>
+<p><code>UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection&lt;? extends GrantedAuthority&gt; authorities)</code><br><br>This constructor should only be used by AuthenticationManager or AuthenticationProvider implementations that are satisfied with producing a trusted</p>
+</blockquote>
+<p>第一个参数就是我们的 UserDetails, 第二个 credentials 代表了用来证明 Principle 的凭证（比如Password），第三个就是困扰我们的 authorities。而在我们的 <code>JwtAuthenticationFilter.java</code> 中，同事少些了一个参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">UsernamePasswordAuthenticationToken authentication &#x3D; new UsernamePasswordAuthenticationToken(</span><br><span class="line">						userDetails, Arrays.asList(new SimpleGrantedAuthority(&quot;USER&quot;)));</span><br></pre></td></tr></table></figure>
+
+<p>这也就因为多态导致调用了第一种构造器，并错误得将 authority 放进了 每个 token 的 credentials 里面。糟糕的是这并不会报出任何错误，导致我们会很难发现问题所在。解决方法就是在两个参数间加一个 null 参数。</p>
+<h2 id="查看当前-Token-所拥有的权限"><a href="#查看当前-Token-所拥有的权限" class="headerlink" title="查看当前 Token 所拥有的权限"></a>查看当前 Token 所拥有的权限</h2><p>可以使用下面这句查看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ck5gloytv000052tlcd2u8h0w" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Spring Data JPA 小记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">星星点灯</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB%E9%9A%8F%E6%83%B3/">生活随想</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E7%94%9F/" rel="tag">人生</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/%E4%BA%BA%E7%94%9F/" style="font-size: 10px;">人生</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">January 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/">Spring Data JPA 小记</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/16/%E5%9C%A8%E4%BD%BF%E7%94%A8Spring-Security%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%80%E4%B8%AA%E5%B0%8F%E7%BB%86%E8%8A%82/">在使用Spring Security时踩到的一个小坑</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/15/%E6%98%9F%E6%98%9F%E7%82%B9%E7%81%AF/">星星点灯</a>
+          </li>
+        
+          <li>
+            <a href="/2020/01/15/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2020 Xiaoshi Wang<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
