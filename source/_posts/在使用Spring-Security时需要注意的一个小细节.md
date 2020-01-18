@@ -2,6 +2,9 @@
 title: 在使用Spring Security时踩到的一个小坑
 date: 2020-01-16 10:51:40
 tags:
+- springboot
+- JWT Token
+categories: 开发笔记
 ---
 ## JwtAuthenticationFilter
 关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照[这篇文章](https://www.devglan.com/spring-security/spring-boot-jwt-auth)设置了以下几个类: 

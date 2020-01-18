@@ -3,13 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Xiaoshi's Blog
+title: Xiaoshi's blogs
 subtitle: ''
 description: ''
 keywords:
-author: Xiaoshi Wang
+author: Xiaoshi
 language: zh-Hans
-timezone: Europe/Berlin
+timezone: ''
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -93,11 +93,11 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: icarus
+theme: Butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/wangxiaoshi/wangxiaoshi.github.io
+  repo: https://github.com/wangxiaoshi/wangxiaoshi.github.io.git
   branch: master
