@@ -5,6 +5,7 @@ tags:
 - springboot
 - JPA
 categories: 开发笔记
+cover: https://raw.githubusercontent.com/wangxiaoshi/image-host-xiaoshi/master/blog_files/img/database-pngrepo-com.png
 ---
 
 Spring Data JPA 是 Spring 基于 Hibernate 开发的一个 JPA 框架。能够帮助我们简单快速实现数据持久层的操作。下面简单介绍一下 spring-data-jpa 的使用。

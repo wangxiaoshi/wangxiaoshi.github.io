@@ -5,6 +5,7 @@ tags:
 - springboot
 - JWT Token
 categories: 开发笔记
+cover: https://raw.githubusercontent.com/wangxiaoshi/image-host-xiaoshi/master/blog_files/img/spring-boot-security.png
 ---
 ## JwtAuthenticationFilter
 关于什么是JWT Token在这篇文章里就不介绍了，主要是想记一个之前困扰了团队很长时间的小bug。项目采用Springboot，同事参照[这篇文章](https://www.devglan.com/spring-security/spring-boot-jwt-auth)设置了以下几个类: 
