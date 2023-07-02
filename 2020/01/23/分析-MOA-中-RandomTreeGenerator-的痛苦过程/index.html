@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Xiaoshi Wang">
+    
+    <title>
+        
+            分析 MOA 中 RandomTreeGenerator 的痛苦过程 |
+        
+        Xiaoshi Wang
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/font/css/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/regular.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/solid.min.css">
+
+    
+<link rel="stylesheet" href="/font/css/brands.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"wangxiaoshi.github.io","root":"/","language":"en"}
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066cc","logo":"/images/profile.JPG","favicon":"/images/logo.svg","avatar":"/images/profile.JPG","font_size":null,"font_family":null,"hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"header_transparent":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving.","font_color":null,"hitokoto":false},"scroll":{"progress_bar":false,"percent":false}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":false},"lazyload":{"enable":false},"comment":{"enable":true,"use":"gitalk","gitalk":{"github_id":"wangxiaoshi","github_admins":null,"repository":"wangxiaoshi.github.io","client_id":"12a3d50ad4f53c60d247","client_secret":"${OAUTH_CLIENT_SECRET}","proxy":null}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":false,"wordcount":false,"min2read":true},"img_align":"left","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"}
+    KEEP.language_code_block = {"copy":"Copy code","copied":"Copied","fold":"Fold code block","folded":"Folded"}
+    KEEP.language_copy_copyright = {"copy":"Copy copyright info","copied":"Copied","title":"Original article title","author":"Original article author","link":"Original article link"}
+  </script>
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/profile.JPG">
+                </a>
+            
+            <a class="logo-title" href="/">
+               Xiaoshi Wang
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">分析 MOA 中 RandomTreeGenerator 的痛苦过程</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/profile.JPG">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">Xiaoshi Wang</span>
+                            
+                                <span class="author-label">Lv1</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2020-01-23 12:32:11</span>
+        <span class="mobile">2020-01-23 12:32</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-07-02 09:00:04</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/MOA/">MOA</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E8%AE%BA%E6%96%87/">论文</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h2 id="论文题目"><a href="#论文题目" class="headerlink" title="论文题目"></a>论文题目</h2><p>我的论文题目是 “Analysis and Optimization for Hoeffding Tree”，主要用到一个 <a class="link"   target="_blank" rel="noopener" href="https://moa.cms.waikato.ac.nz/" >java 的流机器学习框架：MOA<i class="fas fa-external-link-alt"></i></a>，可以在<a class="link"   target="_blank" rel="noopener" href="https://github.com/waikato/moa" >这里<i class="fas fa-external-link-alt"></i></a>找到它的源码，我需要改变其中一个 learner “Hoeffding Tree”，让其获得更少的 Cache misses。为了能准确有效地评估结果，应该让其在对比测试中获得相同的输入 Stream，也就是将 <code>RandomTreeGenerator</code> 变成固定的一棵树。</p>
+<hr>
+<h2 id="分析结构"><a href="#分析结构" class="headerlink" title="分析结构"></a>分析结构</h2><p>我尝试着找到moa具体在哪个阶段调用了 <code>RandomTreeGenerator</code>，但是迟迟没有头绪。我试着在 <code>generateRandomTreeNode</code> 中每次调用打印一次，可是奇怪的是：在设置中我选择了1000个 Node，却只调用了405次该方法。</p>
+<h2 id="测试流程"><a href="#测试流程" class="headerlink" title="测试流程"></a>测试流程</h2><p>我准备了两种测试流程，针对不同的两种架构：</p>
+<h3 id="本地测试"><a href="#本地测试" class="headerlink" title="本地测试"></a>本地测试</h3><p>在 IDEA 中完成 JAR 包的编译后（这也是我之后准备写进脚本的一步），我会在 moa 源码的根目录运行下面的 script：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp &quot;moa/classes/artifacts/moa_test/moa-test.jar&quot; &quot;moa-release-2019.05.0/lib/&quot;</span><br><span class="line">cd moa-release-2019.05.0/lib/</span><br><span class="line">java -cp moa-test.jar -javaagent:sizeofag-1.0.4.jar moa.gui.GUI</span><br></pre></td></tr></table></figure>
+
+<h3 id="远端测试"><a href="#远端测试" class="headerlink" title="远端测试"></a>远端测试</h3><p>同样的，只不过需要先上传新的 <code>moa-test.jar</code> 到服务器上，再运行 MOA：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">DIR=`pwd`</span><br><span class="line">DIR=&quot;$DIR/moa/classes/artifacts/moa_test&quot;</span><br><span class="line"></span><br><span class="line"># Confirm that the file exists</span><br><span class="line">printf &quot;Locating moa-test.jar in $DIR...\n&quot;</span><br><span class="line">if [ ! -f &quot;$DIR/moa-test.jar&quot; ]</span><br><span class="line">then</span><br><span class="line">    printf &quot;ERROR: moa-test.jar does not exist\n&quot;</span><br><span class="line">    exit 1</span><br><span class="line">else</span><br><span class="line">    printf &quot;Found the expected jar package. Start uploading..\n&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"># Upload the file to remote server</span><br><span class="line">scp &quot;$DIR/moa-test.jar&quot; &quot;root@172.105.79.21:~/moa-release-2019.05.0/lib/&quot;</span><br><span class="line">#printf &quot;Upload completed. Start running remote MOA script...\n&quot;</span><br><span class="line">printf &quot;Upload completed. Due to unknown bugs please run the remote script manuelly.\n&quot;</span><br><span class="line"></span><br><span class="line">read -p &quot;Press any key to start downloading the results...&quot;</span><br><span class="line"></span><br><span class="line">scp root@172.105.79.21:~/results/* ~/Documents/Uni/BA/results/</span><br></pre></td></tr></table></figure>
+<p>他会等待我们执行完远端的 MOA 程序再将运行结果下载回本地方便查看。</p>
+<p>在 ssh 连接到服务器后，运行以下 <code>./run_moa.sh [both | origin | test]</code>  ：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">printf &quot;Results will be saved in:$&#123;DIR&#125;\n&quot;</span><br><span class="line"></span><br><span class="line">DATE=`date +%Y-%m-%d-%H:%M:%S`</span><br><span class="line"></span><br><span class="line">PERF_OPTS=&quot;cache-misses,cache-references,cpu-cycles,instructions,ref-cycles,alignment-faults,cpu-clock,emulation-faults,major-faults,minor-faults,page-faults,L1-dcache-load-misses,L1-dcache-loads,L1-dcache-stores,L1-icache-load-misses,branch-load-misses,branch-loads,dTLB-load-misses,dTLB-loads,dTLB-store-misses,dTLB-stores,iTLB-load-misses,iTLB-loads,branch-instructions,branch-misses,bus-cycles,cache-references,cpu-cycles,cycles-ct,cycles-t,instructions,l1d.replacement,l1d_pend_miss.fb_full,l1d_pend_miss.pending_cycles,l1d_pend_miss.pending_cycles_any,l2_demand_rqsts.wb_hit,l2_lines_in.all,l2_lines_in.e,l2_lines_in.i,l2_lines_in.s,l2_lines_out.demand_clean,l2_rqsts.all_code_rd,l2_rqsts.all_demand_data_rd,l2_rqsts.all_demand_miss,l2_rqsts.all_demand_references,l2_rqsts.all_pf,l2_rqsts.all_rfo,l2_rqsts.code_rd_hit,l2_rqsts.code_rd_miss,l2_rqsts.demand_data_rd_hit,l2_rqsts.demand_data_rd_miss,l2_rqsts.l2_pf_hit,l2_rqsts.l2_pf_miss,l2_rqsts.miss,l2_rqsts.references,l2_rqsts.rfo_hit,l2_rqsts.rfo_miss,l2_trans.all_pf,l2_trans.all_requests,l2_trans.all_pf,l2_trans.all_requests,l2_trans.code_rd,l2_trans.demand_data_rd,l2_trans.l1d_wb,l2_trans.l2_fill,l2_trans.l2_wb,l2_trans.rfo&quot;</span><br><span class="line"></span><br><span class="line">if [ &quot;$1&quot; = &quot;both&quot; ]; then</span><br><span class="line">printf &quot;Both jar package will be executed\n&quot;</span><br><span class="line">printf &quot;Running with moa.jar ...\n&quot;</span><br><span class="line">perf stat -e $&#123;PERF_OPTS&#125; java -cp moa.jar -javaagent:sizeofag-1.0.4.jar moa.DoTask &quot;EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -f 10000&quot; &gt; $&#123;DIR&#125;dsresult$&#123;DATE&#125;.csv</span><br><span class="line">printf &quot;Running with moa-test.jar ...\n&quot;</span><br><span class="line">perf stat -e $&#123;PERF_OPTS&#125; java -cp moa-test.jar -javaagent:sizeofag-1.0.4.jar moa.DoTask &quot;EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -f 10000&quot; &gt; $&#123;DIR&#125;dsresult$&#123;DATE&#125;-test.csv</span><br><span class="line"></span><br><span class="line">elif [ &quot;$1&quot; = &quot;origin&quot; ]; then</span><br><span class="line">	printf &quot;Runnning in original MOA ...\n&quot;</span><br><span class="line">	</span><br><span class="line">	perf stat -e $&#123;PERF_OPTS&#125; java -cp moa.jar -javaagent:sizeofag-1.0.4.jar moa.DoTask &quot;EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -f 10000&quot; &gt; $&#123;DIR&#125;dsresult$&#123;DATE&#125;.csv</span><br><span class="line"></span><br><span class="line">elif [ &quot;$1&quot; = &quot;test&quot; ]; then</span><br><span class="line">	printf &quot;Running with moa-test.jar ...\n&quot;</span><br><span class="line">perf stat -e $&#123;PERF_OPTS&#125; java -cp moa-test.jar -javaagent:sizeofag-1.0.4.jar moa.DoTask &quot;EvaluatePrequential -l trees.HoeffdingTree -i 1000000 -f 10000&quot; &gt; $&#123;DIR&#125;dsresult$&#123;DATE&#125;-test.csv</span><br><span class="line"></span><br><span class="line">else</span><br><span class="line">	print [ERROR: Illegal parameter!];</span><br><span class="line">	exit 1</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>它会帮我们运行指定的 MOA 版本，并且输出 pref 的结果方便查看 cache-misses 的情况。结果会保存在 results 目录中。这时就可以在本地按任意键开始下载结果了。</p>
+<hr>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/MOA/">#MOA</a>&nbsp;
+                        </li>
+                    
+                        <li class="tag-item">
+                            <a href="/tags/%E8%AE%BA%E6%96%87/">#论文</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2020/01/17/Spring-Data-JPA-%E5%B0%8F%E8%AE%B0/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Spring Data JPA 小记</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;Comments
+    </div>
+    
+        
+            
+
+    <div class="gitalk-comment-container">
+        <div id="gitalk-container"></div>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css">
+        <script  src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
+        <script >
+          function loadGitalk() {
+            let __gitalk__pathname = decodeURI(location.pathname);
+            const __gitalk__pathnameLength = __gitalk__pathname.length;
+            const __gitalk__pathnameMaxLength = 50;
+            if (__gitalk__pathnameLength > __gitalk__pathnameMaxLength) {
+              __gitalk__pathname = __gitalk__pathname.substring(0, __gitalk__pathnameMaxLength - 3) + '...';
+            }
+
+            try {
+              Gitalk && new Gitalk({
+                clientID: '12a3d50ad4f53c60d247',
+                clientSecret: '${OAUTH_CLIENT_SECRET}',
+                repo: 'wangxiaoshi.github.io',
+                owner: 'wangxiaoshi',
+                admin: 'wangxiaoshi',
+                id: __gitalk__pathname,
+                proxy: '',
+                language: 'en'
+              }).render('gitalk-container');
+            } catch (e) {
+              window.Gitalk = null;
+            }
+          }
+
+          if ('false' === 'true') {
+            const loadGitalkTimeout = setTimeout(() => {
+              loadGitalk();
+              clearTimeout(loadGitalkTimeout);
+            }, 1000);
+          } else {
+            window.addEventListener('DOMContentLoaded', loadGitalk);
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2020</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">Xiaoshi Wang</a>
+            
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+
+    
+<script src="/js/code-block.js"></script>
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/post-helper.js"></script>
+
+        
+            
+<script src="/js/libs/anime.min.js"></script>
+
+        
+        
+    
+</div>
+
+
+
+</body>
+</html>
