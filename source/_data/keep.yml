@@ -221,7 +221,7 @@ comment:
     github_admins:    # GitHub Admins (in Array type), optional
     repository: wangxiaoshi.github.io      # Repository name to store issues
     client_id: 12a3d50ad4f53c60d247        # GitHub Application Client ID
-    client_secret: ${oauth_client_secret}   # GitHub Application Client Secret
+    client_secret: ${OAUTH_CLIENT_SECRET}   # GitHub Application Client Secret
     proxy:            # GitHub oauth request reverse proxy for CORS
 
 # ---------------------------------------------------------------------------------------
